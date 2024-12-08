@@ -4,12 +4,96 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manage Educator</title>
+  <title>Manage Educators</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #e3f2fd;
+    }
+
+    .container {
+      margin-top: 30px;
+    }
+
+    .table-container {
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    h1 {
+      color: #1565c0;
+    }
+
+    .btn-block {
+      background-color: #ff7043;
+      color: white;
+    }
+
+    .btn-unblock {
+      background-color: #4caf50;
+      color: white;
+    }
+
+    .empty-message {
+      color: #616161;
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
 </head>
 
 <body>
-  <h1>Manage Educator</h1>
-  <p>This page will allow you to manage educator data.</p>
+  <div class="container">
+    <h1 class="text-center">Manage Educators</h1>
+    <div class="table-container">
+      <% if (educators.length > 0) { %>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Full Name</th>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Verified</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% educators.forEach((educator, index) => { %>
+              <tr>
+                <td><%= index + 1 %></td>
+                <td><%= educator.fullname %></td>
+                <td><%= educator.username %></td>
+                <td><%= educator.email %></td>
+                <td><%= educator.verified ? "Yes" : "No" %></td>
+                <td>
+                  <form method="POST" action="/manage-educators/delete" style="display: inline;">
+                    <input type="hidden" name="username" value="<%= educator.username %>">
+                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                  </form>
+                  <% if (educator.verified) { %>
+                    <form method="POST" action="/manage-educators/block" style="display: inline;">
+                      <input type="hidden" name="username" value="<%= educator.username %>">
+                      <button type="submit" class="btn btn-block btn-sm">Block</button>
+                    </form>
+                  <% } else { %>
+                    <form method="POST" action="/manage-educators/unblock" style="display: inline;">
+                      <input type="hidden" name="username" value="<%= educator.username %>">
+                      <button type="submit" class="btn btn-unblock btn-sm">Unblock</button>
+                    </form>
+                  <% } %>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      <% } else { %>
+        <p class="empty-message">No educators found.</p>
+      <% } %>
+    </div>
+  </div>
 </body>
 
 </html>

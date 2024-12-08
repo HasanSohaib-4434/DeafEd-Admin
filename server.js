@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 const bodyParser = require("body-parser");
 const session = require("express-session");
 const manageStudentsController = require("./controllers/manageStudentController");
+const manageEducatorsController = require("./controllers/manageEducatorsController");
 dotenv.config();
 
 const app = express();
@@ -47,11 +48,6 @@ app.get("/logout", (req, res) => {
     res.redirect("/login");
   }
 });
-
-app.get("/manage-educator", (req, res) => {
-  res.render("manage-educator");
-});
-
 app.get("/manage-section", (req, res) => {
   res.render("manage-section");
 });
@@ -67,6 +63,17 @@ app.post("/manage-students/delete", manageStudentsController.deleteStudent);
 app.post("/manage-students/block", manageStudentsController.blockStudent);
 
 app.post("/manage-students/unblock", manageStudentsController.unblockStudent);
+
+app.get("/manage-educator", manageEducatorsController.getManageEducatorsPage);
+
+app.post("/manage-educators/delete", manageEducatorsController.deleteEducator);
+
+app.post("/manage-educators/block", manageEducatorsController.blockEducator);
+
+app.post(
+  "/manage-educators/unblock",
+  manageEducatorsController.unblockEducator
+);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
