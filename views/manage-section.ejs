@@ -4,12 +4,136 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manage Section</title>
+  <title>Manage Sections</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #e3f2fd;
+    }
+
+    .container {
+      margin-top: 30px;
+    }
+
+    .section-container {
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    h1 {
+      color: #1565c0;
+    }
+
+    .btn-delete {
+      background-color: #ff7043;
+      color: white;
+    }
+
+    .btn-view {
+      background-color: #4caf50;
+      color: white;
+    }
+
+    .empty-message {
+      color: #616161;
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
 </head>
 
 <body>
-  <h1>Manage Section</h1>
-  <p>This page will allow you to manage sections.</p>
+  <div class="container">
+    <h1 class="text-center">Manage Sections</h1>
+
+    <!-- Educator Selection -->
+    <div class="section-container">
+      <h4>Select Educator</h4>
+      <form id="educatorForm" method="GET" action="/manage-sections">
+        <select name="educatorUsername" class="form-select" onchange="this.form.submit()">
+          <option value="">-- Select Educator --</option>
+          <% educators.forEach((educator) => { %>
+            <option value="<%= educator.username %>" <%= educator.username === selectedEducator ? 'selected' : '' %> >
+              <%= educator.username %>
+            </option>
+          <% }); %>
+        </select>
+      </form>
+    </div>
+
+    <% if (sections && sections.length > 0) { %>
+      <!-- Sections List -->
+      <div class="section-container mt-4">
+        <h4>Sections for <%= selectedEducator %></h4>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Section Name</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% sections.forEach((section, index) => { %>
+              <tr>
+                <td><%= index + 1 %></td>
+                <td><%= section.section %></td>
+                <td>
+                  <form method="POST" action="/manage-sections/delete" style="display: inline;">
+                    <input type="hidden" name="section" value="<%= section.section %>">
+                    <input type="hidden" name="educatorUsername" value="<%= selectedEducator %>">
+                    <button type="submit" class="btn btn-delete btn-sm">Delete Section</button>
+                  </form>
+                  <a href="/manage-sections/view?educatorUsername=<%= selectedEducator %>&section=<%= section.section %>" class="btn btn-view btn-sm">View Students</a>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } else if (selectedEducator) { %>
+      <p class="empty-message">No sections found for this educator.</p>
+    <% } %>
+
+    <% if (students && students.length > 0) { %>
+      <!-- Students in Section -->
+      <div class="section-container mt-4">
+        <h4>Students in Section: <%= selectedSection %></h4>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Full Name</th>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% students.forEach((student, index) => { %>
+              <tr>
+                <td><%= index + 1 %></td>
+                <td><%= student.fullname %></td>
+                <td><%= student.username %></td>
+                <td><%= student.email %></td>
+                <td>
+                  <form method="POST" action="/manage-sections/remove-student" style="display: inline;">
+                    <input type="hidden" name="section" value="<%= selectedSection %>">
+                    <input type="hidden" name="studentUsername" value="<%= student.username %>">
+                    <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                  </form>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } else if (selectedSection) { %>
+      <p class="empty-message">No students found in this section.</p>
+    <% } %>
+  </div>
 </body>
 
 </html>

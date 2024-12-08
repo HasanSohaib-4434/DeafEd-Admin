@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const session = require("express-session");
 const manageStudentsController = require("./controllers/manageStudentController");
 const manageEducatorsController = require("./controllers/manageEducatorsController");
+const manageSectionsController = require("./controllers/manageSectionsController");
 dotenv.config();
 
 const app = express();
@@ -48,9 +49,6 @@ app.get("/logout", (req, res) => {
     res.redirect("/login");
   }
 });
-app.get("/manage-section", (req, res) => {
-  res.render("manage-section");
-});
 
 app.get("/manage-class", (req, res) => {
   res.render("manage-class");
@@ -73,6 +71,19 @@ app.post("/manage-educators/block", manageEducatorsController.blockEducator);
 app.post(
   "/manage-educators/unblock",
   manageEducatorsController.unblockEducator
+);
+
+app.get("/manage-section", manageSectionsController.getManageSectionsPage);
+app.get("/manage-sections", manageSectionsController.getManageSectionsPage);
+
+app.post("/manage-sections/delete", manageSectionsController.deleteSection);
+app.get(
+  "/manage-sections/view",
+  manageSectionsController.viewStudentsInSection
+);
+app.post(
+  "/manage-sections/remove-student",
+  manageSectionsController.removeStudentFromSection
 );
 
 const PORT = process.env.PORT || 3000;
