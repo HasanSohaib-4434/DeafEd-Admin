@@ -5,11 +5,93 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Manage Student</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #e3f2fd;
+    }
+
+    .container {
+      margin-top: 30px;
+    }
+
+    .table-container {
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    h1 {
+      color: #1565c0;
+    }
+
+    .btn-block {
+      background-color: #ff7043;
+      color: white;
+    }
+
+    .btn-unblock {
+      background-color: #4caf50;
+      color: white;
+    }
+  </style>
 </head>
 
 <body>
-  <h1>Manage Student</h1>
-  <p>This page will allow you to manage student data.</p>
+  <div class="container">
+    <h1 class="text-center">Manage Students</h1>
+    <div class="table-container">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Full Name</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Date of Birth</th>
+            <th>Verified</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (students.length > 0) { %>
+            <% students.forEach((student, index) => { %>
+              <tr>
+                <td><%= index + 1 %></td>
+                <td><%= student.fullname %></td>
+                <td><%= student.username %></td>
+                <td><%= student.email %></td>
+                <td><%= student.dob ? student.dob.toDateString() : "N/A" %></td>
+                <td><%= student.verified ? "Yes" : "No" %></td>
+                <td>
+                  <form method="POST" action="/manage-students/delete" style="display: inline;">
+                    <input type="hidden" name="username" value="<%= student.username %>">
+                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                  </form>
+                  <% if (student.verified) { %>
+                    <form method="POST" action="/manage-students/block" style="display: inline;">
+                      <input type="hidden" name="username" value="<%= student.username %>">
+                      <button type="submit" class="btn btn-block btn-sm">Block</button>
+                    </form>
+                  <% } else { %>
+                    <form method="POST" action="/manage-students/unblock" style="display: inline;">
+                      <input type="hidden" name="username" value="<%= student.username %>">
+                      <button type="submit" class="btn btn-unblock btn-sm">Unblock</button>
+                    </form>
+                  <% } %>
+                </td>
+              </tr>
+            <% }); %>
+          <% } else { %>
+            <tr>
+              <td colspan="7" class="text-center">No students found.</td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </body>
 
 </html>

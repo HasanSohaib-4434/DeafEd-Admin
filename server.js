@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const bodyParser = require("body-parser");
 const session = require("express-session");
-
+const manageStudentsController = require("./controllers/manageStudentController");
 dotenv.config();
 
 const app = express();
@@ -47,6 +47,26 @@ app.get("/logout", (req, res) => {
     res.redirect("/login");
   }
 });
+
+app.get("/manage-educator", (req, res) => {
+  res.render("manage-educator");
+});
+
+app.get("/manage-section", (req, res) => {
+  res.render("manage-section");
+});
+
+app.get("/manage-class", (req, res) => {
+  res.render("manage-class");
+});
+
+app.get("/manage-student", manageStudentsController.getManageStudentsPage);
+
+app.post("/manage-students/delete", manageStudentsController.deleteStudent);
+
+app.post("/manage-students/block", manageStudentsController.blockStudent);
+
+app.post("/manage-students/unblock", manageStudentsController.unblockStudent);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
