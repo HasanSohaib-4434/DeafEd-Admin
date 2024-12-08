@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const dotenv = require("dotenv");
-const User = require("./models/User");
+const Admin = require("./models/Admin");
 
 dotenv.config();
 
@@ -19,7 +19,7 @@ mongoose
         return;
       }
 
-      const admin = new User({
+      const admin = new Admin({
         fullname: "Hasan",
         username: "Hasan-kalyar",
         email: "hassankalyar744@gmail.com",

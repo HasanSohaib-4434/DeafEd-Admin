@@ -2,43 +2,51 @@ const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const bodyParser = require("body-parser");
-const bcrypt = require("bcryptjs");
-const nodemailer = require("nodemailer");
+const session = require("express-session");
 
 dotenv.config();
+
 const app = express();
 
-// Middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.set("view engine", "ejs");
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "secret",
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false },
+  })
+);
 
-// Connect to MongoDB
 mongoose
   .connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
   .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.log(err));
+  .catch((err) => console.error(err));
 
-// Models
-const User = require("./models/User");
+const authController = require("./controllers/authController");
 
-// Routes
-app.get("/", (req, res) => {
-  res.render("login");
+app.get("/", authController.loginPage);
+app.get("/login", authController.loginPage);
+app.post("/login", authController.login);
+
+app.get("/logout", (req, res) => {
+  if (req.session) {
+    req.session.destroy((err) => {
+      if (err) {
+        console.error("Error destroying session:", err);
+        res.status(500).send("Unable to log out");
+      } else {
+        res.redirect("/login");
+      }
+    });
+  } else {
+    res.redirect("/login");
+  }
 });
 
-app.post("/login", require("./controllers/authController").login);
-app.get("/forgetpassword", (req, res) => {
-  res.render("forgetpassword");
-});
-app.post("/forgetpassword", require("./controllers/authController").sendOTP);
-app.post(
-  "/resetpassword",
-  require("./controllers/authController").resetPassword
-);
-
-app.listen(process.env.PORT, () => {
-  console.log(`Server running on port ${process.env.PORT}`);
-});
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
