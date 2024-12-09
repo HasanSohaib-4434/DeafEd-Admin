@@ -40,24 +40,19 @@ exports.viewStudentsInSection = async (req, res) => {
   const { educatorUsername, section } = req.query;
 
   try {
-    // Find all educators
     const educators = await User.find({ userType: "Educator" }).select(
       "username email"
     );
 
-    // Find all sections for the educator
     const sections = await Section.find({ educatorUsername });
 
-    // If a section is provided, fetch students in that specific section
     let students = [];
     if (section) {
-      // Get the students from Educator_Student model for that section
       const studentData = await Educator_Student.find({
         educatorUsername,
         section,
       });
 
-      // Extract the student usernames from the result
       students = await User.find({
         userType: "Student",
         username: { $in: studentData.map((data) => data.studentUsername) },
@@ -67,9 +62,9 @@ exports.viewStudentsInSection = async (req, res) => {
     res.render("manage-section", {
       educators,
       selectedEducator: educatorUsername,
-      sections, // Display all sections of the educator
-      selectedSection: section || null, // If a section is selected, show it, otherwise null
-      students, // Show the students only for the selected section
+      sections,
+      selectedSection: section || null,
+      students,
     });
   } catch (error) {
     console.error("Error fetching students:", error);
@@ -80,10 +75,8 @@ exports.removeStudentFromSection = async (req, res) => {
   const { section, studentUsername } = req.body;
 
   try {
-    // Remove the student from the Educator_Student collection based on educatorUsername and section
     await Educator_Student.deleteOne({ section, studentUsername });
 
-    // Redirect to the manage-sections view after the student has been removed
     res.redirect(
       `/manage-sections/view?educatorUsername=${req.body.educatorUsername}&section=${section}`
     );

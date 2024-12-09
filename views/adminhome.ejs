@@ -8,37 +8,46 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body {
-      background-color: #e3f2fd; /* Light Blue */
+      background-color: #e3f2fd;
     }
 
     .container {
       max-width: 800px;
       margin: 50px auto;
       padding: 20px;
-      background-color: #ffffff; /* White */
+      background-color: #ffffff;
       border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
     h3 {
-      color: #1565c0; /* Dark Blue */
+      color: #1565c0;
     }
 
     .btn-danger {
-      background-color: #e53935; /* Red */
+      background-color: #e53935;
       border-color: #e53935;
     }
 
-    .profile p {
+    .profile {
       font-size: 18px;
-      color: #424242; /* Dark Gray */
+      color: #424242;
+      padding: 20px;
+      border-radius: 5px;
+      background-color: #f4f4f4;
+      margin-top: 20px;
     }
 
-    /* Card styling */
+    .profile p {
+      margin: 0;
+      padding: 5px 0;
+    }
+
     .card {
       margin: 15px;
       cursor: pointer;
       transition: transform 0.3s ease-in-out;
+      border-radius: 10px;
     }
 
     .card:hover {
@@ -47,7 +56,7 @@
 
     .card-body {
       text-align: center;
-      color: #1565c0;
+      color: #ffffff;
     }
 
     .card-title {
@@ -55,65 +64,170 @@
       font-weight: bold;
     }
 
-    .card-text {
-      font-size: 1.2rem;
+    .card-manage-student {
+      background-color: #1565c0;
     }
 
+    .card-manage-educator {
+      background-color: #4caf50;
+    }
+
+    .card-manage-section {
+      background-color: #ff9800;
+    }
+
+    .card-manage-test {
+      background-color: #673ab7;
+    }
+
+    .card-manage-lessons {
+      background-color: #f44336;
+    }
+
+    .btn-logout {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+    }
+
+    .modal-body {
+      padding: 20px;
+    }
+
+    .modal-header {
+      background-color: #673ab7;
+      color: white;
+    }
   </style>
 </head>
 
 <body>
   <div class="container">
     <h3 class="text-center">Welcome, <%= user.fullname %></h3>
+
     <div class="profile">
-      <p>Username: <%= user.username %></p>
-      <p>Email: <%= user.email %></p>
+      <p><strong>Username:</strong> <%= user.username %></p>
+      <p><strong>Email:</strong> <%= user.email %></p>
     </div>
 
     <div class="row mt-4">
-      <div class="col-md-3">
-        <div class="card" onclick="window.location.href='/manage-student'">
+      <div class="col-md-4">
+        <div class="card card-manage-student" onclick="window.location.href='/manage-student'">
           <div class="card-body">
             <h5 class="card-title">Manage Student</h5>
           </div>
         </div>
       </div>
-      <div class="col-md-3">
-        <div class="card" onclick="window.location.href='/manage-educator'">
+
+      <div class="col-md-4">
+        <div class="card card-manage-educator" onclick="window.location.href='/manage-educator'">
           <div class="card-body">
             <h5 class="card-title">Manage Educator</h5>
           </div>
         </div>
       </div>
-      <div class="col-md-3">
-        <div class="card" onclick="window.location.href='/manage-section'">
+
+      <div class="col-md-4">
+        <div class="card card-manage-section" onclick="window.location.href='/manage-section'">
           <div class="card-body">
             <h5 class="card-title">Manage Section</h5>
           </div>
         </div>
       </div>
-      <div class="col-md-3">
-        <div class="card" onclick="window.location.href='/manage-class'">
+    </div>
+
+    <div class="row mt-4">
+      <div class="col-md-6">
+        <div class="card card-manage-test" onclick="window.location.href='/manage-test'">
           <div class="card-body">
-            <h5 class="card-title">Manage Class</h5>
-            
+            <h5 class="card-title">Manage Test</h5>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="card card-manage-lessons" onclick="window.location.href='/manage-lessons'">
+          <div class="card-body">
+            <h5 class="card-title">Manage Lessons</h5>
           </div>
         </div>
       </div>
     </div>
 
     <div class="text-center mt-4">
-      <button class="btn btn-danger" id="backButton">Logout</button>
+      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Change Password</button>
+    </div>
+  </div>
+
+  <button class="btn btn-danger btn-logout" id="backButton">Logout</button>
+
+  <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="changePasswordForm">
+            <div class="mb-3">
+              <label for="newPassword" class="form-label">New Password</label>
+              <input type="password" class="form-control" id="newPassword" required>
+              <div class="form-text">Password must be at least 8 characters, contain one lowercase letter, one uppercase letter, one number, and one special character.</div>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </form>
+        </div>
+      </div>
     </div>
   </div>
 
   <script>
+   
+    const username = "<%= user.username %>";
+  
     document.getElementById('backButton').addEventListener('click', () => {
       if (confirm('Do you want to logout?')) {
         window.location.href = '/logout';
       }
     });
+  
+    document.getElementById('changePasswordForm').addEventListener('submit', async function (event) {
+      event.preventDefault();
+  
+      const newPassword = document.getElementById('newPassword').value;
+      const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+  
+      if (!passwordPattern.test(newPassword)) {
+        alert('Password does not meet the requirements.');
+        return;
+      }
+  
+      try {
+        const response = await fetch('/change-password', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ newPassword, username }),
+        });
+  
+        const data = await response.json();
+  
+        if (data.success) {
+          alert('Password changed successfully!');
+          $('#changePasswordModal').modal('hide');
+        } else {
+          alert('Error changing password.');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    });
   </script>
+  
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

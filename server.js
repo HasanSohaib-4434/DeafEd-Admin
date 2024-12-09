@@ -9,6 +9,7 @@ const manageSectionsController = require("./controllers/manageSectionsController
 dotenv.config();
 
 const app = express();
+app.use(express.json());
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.set("view engine", "ejs");
@@ -49,6 +50,8 @@ app.get("/logout", (req, res) => {
     res.redirect("/login");
   }
 });
+
+app.post("/change-password", authController.changePassword);
 
 app.get("/manage-class", (req, res) => {
   res.render("manage-class");

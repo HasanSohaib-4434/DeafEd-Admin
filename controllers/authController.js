@@ -37,3 +37,41 @@ exports.login = (req, res) => {
       });
     });
 };
+
+exports.changePassword = async (req, res) => {
+  const { newPassword, username } = req.body;
+  console.log(username, newPassword);
+  if (
+    !newPassword ||
+    !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/.test(
+      newPassword
+    )
+  ) {
+    return res.status(400).json({
+      success: false,
+      message: "Password does not meet the requirements.",
+    });
+  }
+
+  try {
+    const user = await Admin.findOne({ username });
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+
+    await user.save();
+
+    res
+      .status(200)
+      .json({ success: true, message: "Password changed successfully!" });
+  } catch (error) {
+    console.error("Error changing password:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
